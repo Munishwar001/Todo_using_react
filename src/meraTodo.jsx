@@ -1,4 +1,4 @@
-import { useState, useEffect , useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import './meraTodo.css'
 import Button from './component/button/index'
 // import { Loader } from 'rsuite';
@@ -74,52 +74,51 @@ export default function Todo() {
         if (filter === "uncompleted") return !item.completed;
         return true; // "All"
     });
-     const observeRef = useRef(null);
-    const [allData , setAllData] = useState([]);
+    const observeRef = useRef(null);
+    const [allData, setAllData] = useState([]);
     const [visibleItem, setVisibleItem] = useState([]);
-    const [page,setPage] = useState(0);
+    const [page, setPage] = useState(0);
 
-    useEffect(() =>{ 
+    useEffect(() => {
         const data = JSON.parse(localStorage.getItem("todo")) || [];
-        if(data){
+        if (data) {
             setAllData(data);
-            setVisibleItem(data.slice(page*10,(page+1)*10));
+            setVisibleItem(data.slice(page * 10, (page + 1) * 10));
         }
-    },[])
+    }, [])
 
-    const handleNext = useCallback(()=>{
-        setTimeout(()=>{
-        setPage((prevPage)=>{ 
-            const nextPage  = prevPage + 1; 
-            const newTasks = input.slice(prevPage*10 , nextPage*10);
-             if(newTasks>0){ 
-                setVisibleItem((prevPage)=>{[...prevPage,...newTasks]})
-                return nextPage;
-             } 
-             else
-             {  setHasMore(false);
-                return prevPage;
-            }
-        })  
-        },[1000]) 
-    },[allData])  
+    const handleNext = useCallback(() => {
+        setTimeout(() => {
+            setPage((prevPage) => {
+                const nextPage = prevPage + 1;
+                const newTasks = allData.slice(nextPage * 10, (nextPage + 1) * 10);
 
-    useEffect( ()=>{ 
-             if(!hasMore)
-                return ; 
-            setTimeout(()=>{ 
-        const observer = new IntersectionObserver((entries) =>{
-                if(entries[0].isIntersecting) 
+                if (newTasks.length > 0) {
+                    setVisibleItem((prevItems) => [...prevItems, ...newTasks]);
+                    return nextPage;
+                } else {
+                    setHasMore(false);
+                    return prevPage;
+                }
+            });
+        }, 1500); 
+    }, [allData]);
+
+    useEffect(() => {
+        if (!hasMore)
+            return;
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting)
                     handleNext();
             })
-            if(observeRef.current){
+            if (observeRef.current) {
                 observer.observe(observeRef.current);
             }
-            return ()=>{
+            return () => {
                 if (observeRef.current)
                     observer.unobserve(observeRef.current);
-            }  },[1000])
-    },[handleNext])
+            }
+    }, [handleNext])
 
 
     return (
