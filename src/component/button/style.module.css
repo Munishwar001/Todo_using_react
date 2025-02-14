@@ -1,0 +1,8 @@
+.cantainer{
+    padding: 5px 10px;
+        background-color: blue;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 10px;
+}
